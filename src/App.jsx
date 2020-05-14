@@ -136,7 +136,7 @@ class App extends PureComponent {
     } = this.state;
 
     return (
-      <div className="App flex h-screen m-auto bg-gray-200 font-thin">
+      <div className="md:w-full flex h-screen m-auto bg-gray-200 font-thin">
         <Router>
           <Switch>
             <Route path="/note/:id">
