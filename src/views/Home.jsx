@@ -22,17 +22,6 @@ class Home extends PureComponent {
 
   /////////////////////////////////////////////////////////////////////////
   //
-  //    L I F E C Y C L E    L I F E C Y C L E    L I F E C Y C L E
-  //
-  /////////////////////////////////////////////////////////////////////////
-
-  // componentDidUpdate() {
-  //   const { page } = this.props;
-  //   this.setState({ page });
-  // }
-
-  /////////////////////////////////////////////////////////////////////////
-  //
   //    H E L P E R S    H E L P E R S    H E L P E R S    H E L P E R S
   //
   /////////////////////////////////////////////////////////////////////////
@@ -88,6 +77,7 @@ class Home extends PureComponent {
       notes,
     } = this.props;
 
+    // Calculate the indices of documents we're displaying
     const start = (page - 1) * 27 + 1;
     const end = page * 27;
     return (
@@ -111,6 +101,7 @@ class Home extends PureComponent {
       startIndex = 0;
     }
 
+    // Grab the portion of notes we'd like to display
     const notesPortion = notes.slice(startIndex, endIndex);
 
     // Render the newest notes first
@@ -139,6 +130,7 @@ class Home extends PureComponent {
       notes,
     } = this.props;
 
+    // Determine if there are valid pages to the left or right
     const nextPageDisabled = (page * 27) > notes.length;
     const prevPageDisabled = page === 1;
 
