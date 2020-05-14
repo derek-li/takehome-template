@@ -81,7 +81,6 @@ class Editor extends PureComponent {
     // Pattern changes state and guarantees that the callback
     // function happens after the state change
     this.setState({ title: e.target.value }, () => this.isDifferent());
-    
   }
   
   handleChangeBody(e) {
