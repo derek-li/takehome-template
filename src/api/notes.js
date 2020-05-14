@@ -3,9 +3,9 @@ import axios from 'axios';
 const baseURL = 'http://note.dev.cloud.lightform.com';
 
 // Get all notes
-export async function getNotes() {
+export async function getNotes(page) {
   try {
-    const result = await axios.get(baseURL + '/notes?page=1&limit=100');
+    const result = await axios.get(baseURL + '/notes?page=' + page.toString() + '&limit=27');
     return result;
   } catch (error) {
     console.log(error);

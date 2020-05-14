@@ -17,12 +17,14 @@ class App extends PureComponent {
     super(props);
     this.state = {
       notes: [],
-      // loaded: 0,
+      currentPage: 0,
+      total: 0,
     };
 
     this.newNote = this.newNote.bind(this);
     this.deleteNote = this.deleteNote.bind(this);
     this.updateNote = this.updateNote.bind(this);
+    this.getMoreNotes = this.getMoreNotes.bind(this);
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -32,16 +34,43 @@ class App extends PureComponent {
   /////////////////////////////////////////////////////////////////////////
 
   componentDidMount() {
-    getNotes()
+    getNotes(1)
       .then(res => {
-        this.setState(prevState => ({
-          notes: res.data._embedded.notes,
-          // loaded: prevState.loaded += 10,
-        }));
+        // Calculate pages based on total notes
+        // We display 27 (arbitrary number, it looks nice) notes per page
+        const pages = Math.ceil(res.data.total / 27);
+
+        // Calculate the remainder
+        // If the remainder is not 0, we must GET the page before to fill out the view
+        const remainder = res.data.total % 27;
+        getNotes(pages)
+          .then(res => {
+            this.setState({
+              notes: res.data._embedded.notes,
+              total: res.data.total,
+              currentPage: pages,
+            });
+
+            if (remainder !== 0 && pages > 1) {
+              getNotes(pages - 1)
+              .then(res => {
+                this.setState(prevState => ({
+                  notes: [...res.data._embedded.notes, ...prevState.notes],
+                  currentPage: pages - 1,
+                }));
+              })
+              .catch(err => {
+                console.log(err);
+              });
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          });
       })
       .catch(err => {
         console.log(err);
-      })
+      });
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -49,6 +78,24 @@ class App extends PureComponent {
   //    H E L P E R S    H E L P E R S    H E L P E R S    H E L P E R S
   //
   /////////////////////////////////////////////////////////////////////////
+
+  getMoreNotes() {
+    const { currentPage } = this.state;
+    // Nothing to get
+    if (currentPage - 1 <= 0) return false;
+    getNotes(currentPage - 1)
+      .then(res => {
+        this.setState(prevState => ({
+          notes: [...res.data._embedded.notes, ...prevState.notes],
+          currentPage: currentPage - 1,
+        }));
+      })
+      .catch(err => {
+        console.log(err);
+      });
+
+    return true;
+  }
 
   newNote(note) {
     this.setState(prevState => ({
@@ -84,6 +131,8 @@ class App extends PureComponent {
   render() {
     const {
       notes,
+      total,
+      currentPage,
     } = this.state;
 
     return (
@@ -101,6 +150,9 @@ class App extends PureComponent {
               <Home
                 notes={notes}
                 newNote={this.newNote}
+                total={total}
+                page={currentPage}
+                getNotes={this.getMoreNotes}
               />
             </Route>
           </Switch>
