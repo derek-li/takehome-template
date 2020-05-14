@@ -8,7 +8,7 @@ import {
 } from '../assets';
 import {
   addNote,
-} from '../api/api';
+} from '../api';
 
 class Home extends PureComponent {
   /////////////////////////////////////////////////////////////////////////
@@ -22,7 +22,6 @@ class Home extends PureComponent {
       newNote,
       history,
     } = this.props;
-
     const note = {
       title: '',
       body: '',
@@ -54,8 +53,8 @@ class Home extends PureComponent {
       notes,
     } = this.props;
 
+    // Render the newest notes first
     const reversed = notes.reverse();
-
     return reversed.map(note => {
       return (
         <Link

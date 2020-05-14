@@ -4,14 +4,13 @@ import {
   Switch,
   Route,
 } from 'react-router-dom';
-// import { v4 as uuidv4 } from 'uuid';
 import {
   Home,
   Editor,
 } from './views';
 import {
   getNotes,
-} from './api/api';
+} from './api';
 
 class App extends PureComponent {
   constructor(props) {
@@ -57,9 +56,9 @@ class App extends PureComponent {
     }));
   }
 
-  deleteNote(id) {
+  deleteNote(removedNote) {
     this.setState(prevState => ({
-      notes: prevState.notes.filter(note => note.id !== id),
+      notes: prevState.notes.filter(note => note.id !== removedNote.id),
     }));
   }
 

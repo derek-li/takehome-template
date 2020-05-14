@@ -10,7 +10,7 @@ import {
 import {
   deleteNote as remove,
   updateNote,
-} from '../api/api';
+} from '../api';
 
 class Editor extends PureComponent {
   constructor(props) {
@@ -78,13 +78,14 @@ class Editor extends PureComponent {
   }
 
   handleChangeTitle(e) {
-    this.setState({ title: e.target.value });
-    this.isDifferent();
+    // Pattern changes state and guarantees that the callback
+    // function happens after the state change
+    this.setState({ title: e.target.value }, () => this.isDifferent());
+    
   }
   
   handleChangeBody(e) {
-    this.setState({ body: e.target.value });
-    this.isDifferent();
+    this.setState({ body: e.target.value }, () => this.isDifferent());
   }
 
   onSave() {
@@ -95,15 +96,16 @@ class Editor extends PureComponent {
       body,
       note,
     } = this.state;
+
     const newNote = {
       id,
       title,
       body,
     };
-
     updateNote(note, newNote)
       .then(res => {
         update(newNote);
+        this.setState({ note: newNote }, () => this.isDifferent());
       })
       .catch(err => {
         console.log(err);
@@ -115,13 +117,13 @@ class Editor extends PureComponent {
       history,
       deleteNote,
     } = this.props;
+    const { note } = this.state;
 
-    const { id } = this.state;
     // Delete note on server
-    remove(id)
+    remove(note)
       .then(res => {
         // Update state to match server
-        deleteNote(id);
+        deleteNote(note);
         history.push('/');
       })
       .catch(err => {
@@ -143,12 +145,12 @@ class Editor extends PureComponent {
       isDifferent,
     } = this.state;
 
-    // Note has been deleted or is missing for whatever reason.
+    // Note has been deleted or is missing for whatever reason
     if (!note) {
       return (
         <Link
           to="/"
-          className="h-full w-full px-2 py-10 mx-40 font-thin"
+          className="h-full w-full py-10 mx-40 font-thin"
         >
           This note no longer exists, click anywhere to go back.
         </Link>

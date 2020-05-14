@@ -34,10 +34,10 @@ export async function getNote(note) {
 }
 
 // Update a note
-export async function updateNote(note, data) {
+export async function updateNote(note, updateNote) {
   try {
     const { id } = note;
-    const result = await axios.patch(baseURL + '/notes/' + id, data);
+    const result = await axios.patch(baseURL + '/notes/' + id, updateNote);
     return result;
   } catch (error) {
     console.log(error);
@@ -45,8 +45,9 @@ export async function updateNote(note, data) {
 }
 
 // Delete a note
-export async function deleteNote(id) {
+export async function deleteNote(note) {
   try {
+    const { id } = note;
     const result = await axios.delete(baseURL + '/notes/' + id);
     return result;
   } catch (error) {
