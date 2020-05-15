@@ -100,12 +100,14 @@ class App extends PureComponent {
   newNote(note) {
     this.setState(prevState => ({
       notes: [...prevState.notes, note],
+      total: prevState.total + 1,
     }));
   }
 
   deleteNote(removedNote) {
     this.setState(prevState => ({
       notes: prevState.notes.filter(note => note.id !== removedNote.id),
+      total: prevState.total - 1,
     }));
   }
 

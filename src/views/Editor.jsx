@@ -176,12 +176,12 @@ class Editor extends PureComponent {
           <input
             type="text"
             placeholder="Please enter a title."
-            className="md:w-7/12 h-10 bg-gray-200 outline-none ml-4 w-auto font-thin mr-auto"
+            className="md:w-7/12 w-2/5 h-10 bg-gray-200 outline-none ml-4 w-auto font-thin mr-auto"
             value={title}
             onChange={(e) => this.handleChangeTitle(e)}
           />
           <button
-            className={`${displaySave} h-8 w-40 mr-2 rounded-full border bg-white text-xs font-thin bg-blue-400 text-white`}
+            className={`${displaySave} md:w-40 w-32 h-8 mr-2 rounded-full border bg-white text-xs font-thin bg-blue-400 text-white`}
             onClick={() => this.onSave()}
           >
             Save Changes

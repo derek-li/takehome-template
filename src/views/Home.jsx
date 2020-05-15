@@ -75,6 +75,7 @@ class Home extends PureComponent {
     } = this.state;
     const {
       notes,
+      total,
     } = this.props;
 
     // Calculate the indices of documents we're displaying
@@ -82,7 +83,7 @@ class Home extends PureComponent {
     const end = page * 27;
     return (
       <div className="text-xs ml-auto">
-        {start} - {notes.length > end ? end : notes.length} of {notes.length}
+        {start} - {notes.length > end ? end : notes.length} of {total}
       </div>
     );
   }
@@ -110,7 +111,7 @@ class Home extends PureComponent {
       return (
         <Link
           to={`/note/${note.id}`}
-          className="md:m-2 h-40 w-32 border rounded-md bg-white mx-auto my-2 overflow-hidden"
+          className="md:m-2 h-40 w-32 border rounded-md bg-white mx-3 my-2 overflow-hidden"
           key={note.id}
         >
           <h1 className="text-sm m-2 mb-1 border-b truncate h-5">{note.title}</h1>
@@ -131,11 +132,11 @@ class Home extends PureComponent {
     } = this.props;
 
     // Determine if there are valid pages to the left or right
-    const nextPageDisabled = (page * 27) > notes.length;
+    const nextPageDisabled = (page * 27) >= notes.length;
     const prevPageDisabled = page === 1;
 
     return (
-      <div className="p-8 flex flex-col items-center">
+      <div className="w-full p-8 flex flex-col items-center">
         <div className="md:w-7/12 md:ml-0 ml-auto flex mb-2 justify-center items-center">
           {this.renderPageInfo()}
           <button
@@ -163,7 +164,7 @@ class Home extends PureComponent {
         </div>
         <div className="md:w-7/12 flex flex-wrap w-auto content-start overflow-scroll">
           <button
-            className="md:m-2 my-2 mx-auto h-40 w-32 flex flex-col items-center justify-center border rounded-md bg-white outline-none font-thin"
+            className="md:m-2 my-2 mx-3 h-40 w-32 flex flex-col items-center justify-center border rounded-md bg-white outline-none font-thin"
             onClick={() => this.handleNewNote()}
           >
             <img
