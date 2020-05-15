@@ -37,7 +37,7 @@ class Home extends PureComponent {
     };
 
     addNote(note)
-      .then(res => {
+      .then((res) => {
         // Add new note to state
         newNote({
           id: res.data,
@@ -46,7 +46,7 @@ class Home extends PureComponent {
         });
         history.push('/note/'.concat(res.data.toString()));
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   }
@@ -107,7 +107,7 @@ class Home extends PureComponent {
 
     // Render the newest notes first
     notesPortion.reverse();
-    return notesPortion.map(note => (
+    return notesPortion.map((note) => (
       <Link
         to={`/note/${note.id}`}
         className="md:m-2 h-40 w-32 border rounded-md bg-white mx-3 my-2 overflow-hidden"

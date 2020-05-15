@@ -35,8 +35,8 @@ class App extends PureComponent {
 
   componentDidMount() {
     getNotes(1)
-      .then(res => {
-        // Calculate pages based on total notes
+      .then((res) => {
+        // Calculate total pages for pagination based on total notes
         // We display 27 (arbitrary number, it looks nice) notes per page
         const pages = Math.ceil(res.data.total / 27);
 
@@ -44,7 +44,7 @@ class App extends PureComponent {
         // If the remainder is not 0, we must GET the page before to fill out the view
         const remainder = res.data.total % 27;
         getNotes(pages)
-          .then(res => {
+          .then((res) => {
             this.setState({
               notes: res.data._embedded.notes,
               total: res.data.total,
@@ -53,22 +53,22 @@ class App extends PureComponent {
 
             if (remainder !== 0 && pages > 1) {
               getNotes(pages - 1)
-                .then(res => {
-                  this.setState(prevState => ({
+                .then((res) => {
+                  this.setState((prevState) => ({
                     notes: [...res.data._embedded.notes, ...prevState.notes],
                     currentPagination: pages - 1,
                   }));
                 })
-                .catch(err => {
+                .catch((err) => {
                   console.log(err);
                 });
             }
           })
-          .catch(err => {
+          .catch((err) => {
             console.log(err);
           });
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   }
@@ -83,14 +83,14 @@ class App extends PureComponent {
     const { currentPagination } = this.state;
     // Nothing to get
     if (currentPagination - 1 <= 0) return false;
-    getNotes(currentPagination - 1)
-      .then(res => {
-        this.setState(prevState => ({
+    getNotes((currentPagination) - 1)
+      .then((res) => {
+        this.setState((prevState) => ({
           notes: [...res.data._embedded.notes, ...prevState.notes],
           currentPagination: currentPagination - 1,
         }));
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
 
@@ -98,15 +98,15 @@ class App extends PureComponent {
   }
 
   newNote(note) {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       notes: [...prevState.notes, note],
       total: prevState.total + 1,
     }));
   }
 
   deleteNote(removedNote) {
-    this.setState(prevState => ({
-      notes: prevState.notes.filter(note => note.id !== removedNote.id),
+    this.setState((prevState) => ({
+      notes: prevState.notes.filter((note) => note.id !== removedNote.id),
       total: prevState.total - 1,
     }));
   }
@@ -116,7 +116,7 @@ class App extends PureComponent {
     const updatedNotes = notes.slice();
 
     // Find and replace the note with the updated version
-    const indexOfOldNote = notes.findIndex(note => note.id === newNote.id);
+    const indexOfOldNote = notes.findIndex((note) => note.id === newNote.id);
     updatedNotes.splice(indexOfOldNote, 1, newNote);
 
     this.setState({

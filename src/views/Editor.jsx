@@ -31,7 +31,7 @@ class Editor extends PureComponent {
   /////////////////////////////////////////////////////////////////////////
 
   static getDerivedStateFromProps(props, state) {
-    const note = props.notes.find(note => note.id.toString() === props.match.params.id);
+    const note = props.notes.find((note) => note.id.toString() === props.match.params.id);
 
     if (!note) return null;
 
@@ -68,12 +68,12 @@ class Editor extends PureComponent {
 
     // Delete note on server
     remove(note)
-      .then(res => {
+      .then((res) => {
         // Update state to match server
         deleteNote(note);
         history.push('/');
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   }
@@ -93,11 +93,11 @@ class Editor extends PureComponent {
       body,
     };
     updateNote(note, newNote)
-      .then(res => {
+      .then((res) => {
         update(newNote);
         this.setState({ note: newNote }, () => this.isDifferent());
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   }
