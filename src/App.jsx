@@ -17,7 +17,7 @@ class App extends PureComponent {
     super(props);
     this.state = {
       notes: [],
-      currentPage: 0,
+      currentPagination: 0,
       total: 0,
     };
 
@@ -48,7 +48,7 @@ class App extends PureComponent {
             this.setState({
               notes: res.data._embedded.notes,
               total: res.data.total,
-              currentPage: pages,
+              currentPagination: pages,
             });
 
             if (remainder !== 0 && pages > 1) {
@@ -56,7 +56,7 @@ class App extends PureComponent {
               .then(res => {
                 this.setState(prevState => ({
                   notes: [...res.data._embedded.notes, ...prevState.notes],
-                  currentPage: pages - 1,
+                  currentPagination: pages - 1,
                 }));
               })
               .catch(err => {
@@ -80,14 +80,14 @@ class App extends PureComponent {
   /////////////////////////////////////////////////////////////////////////
 
   getMoreNotes() {
-    const { currentPage } = this.state;
+    const { currentPagination } = this.state;
     // Nothing to get
-    if (currentPage - 1 <= 0) return false;
-    getNotes(currentPage - 1)
+    if (currentPagination - 1 <= 0) return false;
+    getNotes(currentPagination - 1)
       .then(res => {
         this.setState(prevState => ({
           notes: [...res.data._embedded.notes, ...prevState.notes],
-          currentPage: currentPage - 1,
+          currentPagination: currentPagination - 1,
         }));
       })
       .catch(err => {
