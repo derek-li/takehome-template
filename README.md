@@ -1,3 +1,18 @@
+## Take home template BASIC
+
+### Features and technology:
+- Basic file structure
+- Tailwindcss
+- React Router
+
+### Example patterns for:
+- Pagination
+- Basic create, read, update, and, delete API consumption
+- Responsive layout (no tablet)
+- Routing
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
