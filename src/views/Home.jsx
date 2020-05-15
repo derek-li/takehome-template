@@ -84,7 +84,7 @@ class Home extends PureComponent {
       <div className="text-xs ml-auto">
         {start} - {notes.length > end ? end : notes.length} of {notes.length}
       </div>
-    )
+    );
   }
 
   renderNotes() {
@@ -119,7 +119,7 @@ class Home extends PureComponent {
           </p>
         </Link>
       );
-    })
+    });
   }
 
   render() {
@@ -163,7 +163,7 @@ class Home extends PureComponent {
         </div>
         <div className="md:w-7/12 flex flex-wrap w-auto content-start overflow-scroll">
           <button
-            className="md:m-2 my-2 mx-auto h-40 w-32 flex flex-col items-center justify-center border rounded-md bg-white m-2 outline-none font-thin"
+            className="md:m-2 my-2 mx-auto h-40 w-32 flex flex-col items-center justify-center border rounded-md bg-white outline-none font-thin"
             onClick={() => this.handleNewNote()}
           >
             <img

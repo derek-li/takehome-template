@@ -149,7 +149,7 @@ class Editor extends PureComponent {
       return (
         <Link
           to="/"
-          className="h-full w-full py-10 mx-40 font-thin"
+          className="md:w-2/5 md:py-10 h-full w-full py-10 mx-40 font-thin"
         >
           This note no longer exists, click anywhere to go back.
         </Link>
