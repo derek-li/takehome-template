@@ -15,7 +15,7 @@ import {
 class Home extends PureComponent {
   constructor(props) {
     super(props);
-    this.state ={
+    this.state = {
       page: 1,
     };
   }
@@ -44,7 +44,7 @@ class Home extends PureComponent {
           title: res.config.data.title,
           body: res.config.data.body,
         });
-        history.push('/note/' + res.data);
+        history.push('/note/'.concat(res.data.toString()));
       })
       .catch(err => {
         console.log(err);
@@ -97,7 +97,7 @@ class Home extends PureComponent {
     } = this.state;
 
     let startIndex = notes.length - page * 27;
-    let endIndex = startIndex + 27;
+    const endIndex = startIndex + 27;
     if (startIndex < 0) {
       startIndex = 0;
     }
@@ -107,20 +107,18 @@ class Home extends PureComponent {
 
     // Render the newest notes first
     notesPortion.reverse();
-    return notesPortion.map(note => {
-      return (
-        <Link
-          to={`/note/${note.id}`}
-          className="md:m-2 h-40 w-32 border rounded-md bg-white mx-3 my-2 overflow-hidden"
-          key={note.id}
-        >
-          <h1 className="text-sm m-2 mb-1 border-b truncate h-5">{note.title}</h1>
-          <p className="mx-2 leading-relaxed text-xs">
-            {note.body}
-          </p>
-        </Link>
-      );
-    });
+    return notesPortion.map(note => (
+      <Link
+        to={`/note/${note.id}`}
+        className="md:m-2 h-40 w-32 border rounded-md bg-white mx-3 my-2 overflow-hidden"
+        key={note.id}
+      >
+        <h1 className="text-sm m-2 mb-1 border-b truncate h-5">{note.title}</h1>
+        <p className="mx-2 leading-relaxed text-xs">
+          {note.body}
+        </p>
+      </Link>
+    ));
   }
 
   render() {
@@ -140,6 +138,7 @@ class Home extends PureComponent {
         <div className="md:w-7/12 md:ml-0 ml-auto flex mb-2 justify-center items-center">
           {this.renderPageInfo()}
           <button
+            type="button"
             disabled={prevPageDisabled}
             className="mx-2 h-6 w-6 flex rounded-full border justify-center items-center bg-white"
             onClick={() => this.loadPrevPage()}
@@ -151,6 +150,7 @@ class Home extends PureComponent {
             />
           </button>
           <button
+            type="button"
             disabled={nextPageDisabled}
             className="h-6 w-6 flex rounded-full border justify-center items-center bg-white"
             onClick={() => this.loadNextPage()}
@@ -164,6 +164,7 @@ class Home extends PureComponent {
         </div>
         <div className="md:w-7/12 flex flex-wrap w-auto content-start overflow-scroll">
           <button
+            type="button"
             className="md:m-2 my-2 mx-3 h-40 w-32 flex flex-col items-center justify-center border rounded-md bg-white outline-none font-thin"
             onClick={() => this.handleNewNote()}
           >

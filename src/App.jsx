@@ -53,15 +53,15 @@ class App extends PureComponent {
 
             if (remainder !== 0 && pages > 1) {
               getNotes(pages - 1)
-              .then(res => {
-                this.setState(prevState => ({
-                  notes: [...res.data._embedded.notes, ...prevState.notes],
-                  currentPagination: pages - 1,
-                }));
-              })
-              .catch(err => {
-                console.log(err);
-              });
+                .then(res => {
+                  this.setState(prevState => ({
+                    notes: [...res.data._embedded.notes, ...prevState.notes],
+                    currentPagination: pages - 1,
+                  }));
+                })
+                .catch(err => {
+                  console.log(err);
+                });
             }
           })
           .catch(err => {
@@ -114,7 +114,7 @@ class App extends PureComponent {
   updateNote(newNote) {
     const { notes } = this.state;
     const updatedNotes = notes.slice();
-    
+
     // Find and replace the note with the updated version
     const indexOfOldNote = notes.findIndex(note => note.id === newNote.id);
     updatedNotes.splice(indexOfOldNote, 1, newNote);

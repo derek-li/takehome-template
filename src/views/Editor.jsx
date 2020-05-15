@@ -49,7 +49,7 @@ class Editor extends PureComponent {
         body,
       };
     }
-  
+
     return null;
   }
 
@@ -59,37 +59,28 @@ class Editor extends PureComponent {
   //
   /////////////////////////////////////////////////////////////////////////
 
-  isDifferent() {
+  onDelete() {
     const {
-      title,
-      body,
-      note,
-    } = this.state;
+      history,
+      deleteNote,
+    } = this.props;
+    const { note } = this.state;
 
-    if (title !== note.title || body !== note.body) {
-      this.setState({
-        isDifferent: true,
+    // Delete note on server
+    remove(note)
+      .then(res => {
+        // Update state to match server
+        deleteNote(note);
+        history.push('/');
+      })
+      .catch(err => {
+        console.log(err);
       });
-    } else {
-      this.setState({
-        isDifferent: false,
-      });
-    }
-  }
-
-  handleChangeTitle(e) {
-    // Pattern changes state and guarantees that the callback
-    // function happens after the state change
-    this.setState({ title: e.target.value }, () => this.isDifferent());
-  }
-  
-  handleChangeBody(e) {
-    this.setState({ body: e.target.value }, () => this.isDifferent());
   }
 
   onSave() {
     const { update } = this.props;
-    const { 
+    const {
       id,
       title,
       body,
@@ -111,25 +102,34 @@ class Editor extends PureComponent {
       });
   }
 
-  onDelete() {
-    const {
-      history,
-      deleteNote,
-    } = this.props;
-    const { note } = this.state;
-
-    // Delete note on server
-    remove(note)
-      .then(res => {
-        // Update state to match server
-        deleteNote(note);
-        history.push('/');
-      })
-      .catch(err => {
-        console.log(err);
-      });
+  handleChangeTitle(e) {
+    // Pattern changes state and guarantees that the callback
+    // function happens after the state change
+    this.setState({ title: e.target.value }, () => this.isDifferent());
   }
-  
+
+  handleChangeBody(e) {
+    this.setState({ body: e.target.value }, () => this.isDifferent());
+  }
+
+  isDifferent() {
+    const {
+      title,
+      body,
+      note,
+    } = this.state;
+
+    if (title !== note.title || body !== note.body) {
+      this.setState({
+        isDifferent: true,
+      });
+    } else {
+      this.setState({
+        isDifferent: false,
+      });
+    }
+  }
+
   /////////////////////////////////////////////////////////////////////////
   //
   //    R E N D E R    R E N D E R    R E N D E R    R E N D E R
@@ -181,12 +181,14 @@ class Editor extends PureComponent {
             onChange={(e) => this.handleChangeTitle(e)}
           />
           <button
+            type="button"
             className={`${displaySave} md:w-40 w-32 h-8 mr-2 rounded-full border bg-white text-xs font-thin bg-blue-400 text-white`}
             onClick={() => this.onSave()}
           >
             Save Changes
           </button>
           <button
+            type="button"
             className="h-8 w-8 flex rounded-full border justify-center items-center bg-red-300"
             onClick={() => this.onDelete()}
           >
