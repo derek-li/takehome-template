@@ -161,7 +161,7 @@ class Editor extends PureComponent {
     if (!isDifferent) displaySave = 'hidden';
 
     return (
-      <div className="h-full w-full flex flex-col rounded-md py-10 mx-40">
+      <div className="md:w-2/5 md:py-10 h-full w-full flex flex-col rounded-md  mx-auto">
         <div className="border h-12 flex items-center px-2 rounded-md rounded-b-none">
           <Link
             to="/"
@@ -176,7 +176,7 @@ class Editor extends PureComponent {
           <input
             type="text"
             placeholder="Please enter a title."
-            className="h-10 bg-gray-200 outline-none ml-4 w-2/3 font-thin mr-auto"
+            className="md:w-7/12 h-10 bg-gray-200 outline-none ml-4 w-auto font-thin mr-auto"
             value={title}
             onChange={(e) => this.handleChangeTitle(e)}
           />
