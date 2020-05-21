@@ -1,11 +1,12 @@
 import axios from 'axios';
 
 const baseURL = 'http://note.dev.cloud.lightform.com';
+const limitPerPage = 10;
 
 // Get all notes
 export async function getNotes(page) {
   try {
-    const result = await axios.get(baseURL + '/notes?page=' + page.toString() + '&limit=27');
+    const result = await axios.get(baseURL + '/notes?page=' + page + '&limit=' + limitPerPage.toString());
     return result;
   } catch (error) {
     console.log(error);
@@ -23,9 +24,8 @@ export async function addNote(newNote) {
 }
 
 // Get specific note
-export async function getNote(note) {
+export async function getNote(id) {
   try {
-    const { id } = note;
     const result = await axios.get(baseURL + '/notes/' + id);
     return result;
   } catch (error) {
@@ -34,9 +34,8 @@ export async function getNote(note) {
 }
 
 // Update a note
-export async function updateNote(note, updateNote) {
+export async function updateNote(id, updateNote) {
   try {
-    const { id } = note;
     const result = await axios.patch(baseURL + '/notes/' + id, updateNote);
     return result;
   } catch (error) {

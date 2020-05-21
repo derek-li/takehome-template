@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import {
-  Link,
   withRouter,
 } from 'react-router-dom';
 import {
@@ -10,6 +9,7 @@ import {
 import {
   deleteNote as remove,
   updateNote,
+  getNote,
 } from '../api';
 
 class Editor extends PureComponent {
@@ -30,27 +30,39 @@ class Editor extends PureComponent {
   //
   /////////////////////////////////////////////////////////////////////////
 
-  static getDerivedStateFromProps(props, state) {
-    const note = props.notes.find((note) => note.id.toString() === props.match.params.id);
-
-    if (!note) return null;
-
+  componentDidMount() {
     const {
-      id,
-      title,
-      body,
-    } = note;
-
-    if (id !== state.id) {
-      return {
-        note,
+      match,
+      history,
+      notes,
+    } = this.props;
+    const id = Number(match.params.id);
+    // Check state for the note we're editing, otherwise make a
+    // call to the server
+    const note = notes.find((n) => n.id === id);
+    if (note) {
+      this.setState({
         id,
-        title,
-        body,
-      };
+        title: note.title,
+        body: note.body,
+        note,
+      });
+    } else {
+      getNote(id)
+      .then((res) => {
+        // If user routed to a note that doesn't exist we redirect to the first page of notes
+        if (!res) {
+          history.push('/');
+        } else {
+          this.setState({
+            id,
+            title: res.data.title,
+            body: res.data.body,
+            note: res.data,
+          });
+        }
+      });
     }
-
-    return null;
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -71,10 +83,7 @@ class Editor extends PureComponent {
       .then((res) => {
         // Update state to match server
         deleteNote(note);
-        history.push('/');
-      })
-      .catch((err) => {
-        console.log(err);
+        history.goBack();
       });
   }
 
@@ -84,7 +93,6 @@ class Editor extends PureComponent {
       id,
       title,
       body,
-      note,
     } = this.state;
 
     const newNote = {
@@ -92,18 +100,15 @@ class Editor extends PureComponent {
       title,
       body,
     };
-    updateNote(note, newNote)
+    updateNote(id, newNote)
       .then((res) => {
         update(newNote);
         this.setState({ note: newNote }, () => this.isDifferent());
-      })
-      .catch((err) => {
-        console.log(err);
       });
   }
 
   handleChangeTitle(e) {
-    // Pattern changes state and guarantees that the callback
+    // This pattern changes state and guarantees that the callback
     // function happens after the state change
     this.setState({ title: e.target.value }, () => this.isDifferent());
   }
@@ -140,31 +145,23 @@ class Editor extends PureComponent {
     const {
       title,
       body,
-      note,
       isDifferent,
     } = this.state;
+    const {
+      history,
+    } = this.props;
 
-    // Note has been deleted or is missing for whatever reason
-    if (!note) {
-      return (
-        <Link
-          to="/"
-          className="md:w-2/5 md:py-10 h-full w-full py-10 mx-40 font-thin"
-        >
-          This note no longer exists, click anywhere to go back.
-        </Link>
-      );
-    }
-
-    // Conditionally render the save button
+    // Conditionally render the save button if the current content differs from
+    // the original notes content
     let displaySave = '';
     if (!isDifferent) displaySave = 'hidden';
 
     return (
       <div className="md:w-2/5 md:py-10 h-full w-full flex flex-col rounded-md  mx-auto">
         <div className="border h-12 flex items-center px-2 rounded-md rounded-b-none">
-          <Link
-            to="/"
+          <button
+            type="button"
+            onClick={() => history.goBack()}
             className="h-8 w-8 flex rounded-full border justify-center items-center bg-white"
           >
             <img
@@ -172,12 +169,12 @@ class Editor extends PureComponent {
               src={backIcon}
               className="h-4 w-4"
             />
-          </Link>
+          </button>
           <input
             type="text"
             placeholder="Please enter a title."
-            className="md:w-7/12 w-2/5 h-10 bg-gray-200 outline-none ml-4 w-auto font-thin mr-auto"
-            value={title}
+            className="md:w-5/12 w-2/5 h-10 bg-gray-200 outline-none ml-4 w-auto font-thin mr-auto"
+            value={title || ''}
             onChange={(e) => this.handleChangeTitle(e)}
           />
           <button
@@ -202,7 +199,7 @@ class Editor extends PureComponent {
         <textarea
           placeholder="Write your note here."
           className="flex w-full h-full border outline-none p-8 rounded-md rounded-t-none font-thin"
-          value={body}
+          value={body || ''}
           onChange={(e) => this.handleChangeBody(e)}
         />
       </div>

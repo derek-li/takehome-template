@@ -3,6 +3,7 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
+  Redirect,
 } from 'react-router-dom';
 import {
   Home,
@@ -17,14 +18,15 @@ class App extends PureComponent {
     super(props);
     this.state = {
       notes: [],
-      currentPagination: 0,
+      lastPage: 0,
       total: 0,
+      visited: [],
     };
 
     this.newNote = this.newNote.bind(this);
     this.deleteNote = this.deleteNote.bind(this);
     this.updateNote = this.updateNote.bind(this);
-    this.getMoreNotes = this.getMoreNotes.bind(this);
+    this.setNotes = this.setNotes.bind(this);
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -37,39 +39,12 @@ class App extends PureComponent {
     getNotes(1)
       .then((res) => {
         // Calculate total pages for pagination based on total notes
-        // We display 27 (arbitrary number, it looks nice) notes per page
-        const pages = Math.ceil(res.data.total / 27);
+        const lastPage = Math.ceil(res.data.total / 10);
 
-        // Calculate the remainder
-        // If the remainder is not 0, we must GET the page before to fill out the view
-        const remainder = res.data.total % 27;
-        getNotes(pages)
-          .then((res) => {
-            this.setState({
-              notes: res.data._embedded.notes,
-              total: res.data.total,
-              currentPagination: pages,
-            });
-
-            if (remainder !== 0 && pages > 1) {
-              getNotes(pages - 1)
-                .then((res) => {
-                  this.setState((prevState) => ({
-                    notes: [...res.data._embedded.notes, ...prevState.notes],
-                    currentPagination: pages - 1,
-                  }));
-                })
-                .catch((err) => {
-                  console.log(err);
-                });
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      })
-      .catch((err) => {
-        console.log(err);
+        this.setState({
+          total: res.data.total,
+          lastPage,
+        });
       });
   }
 
@@ -79,29 +54,45 @@ class App extends PureComponent {
   //
   /////////////////////////////////////////////////////////////////////////
 
-  getMoreNotes() {
-    const { currentPagination } = this.state;
-    // Nothing to get
-    if (currentPagination - 1 <= 0) return false;
-    getNotes((currentPagination) - 1)
-      .then((res) => {
-        this.setState((prevState) => ({
-          notes: [...res.data._embedded.notes, ...prevState.notes],
-          currentPagination: currentPagination - 1,
-        }));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  setNotes(newNotes, visitedPage, direction) {
+    const { visited } = this.state;
 
-    return true;
+    // Depending if we're moving to a previous page or next page, we
+    // append the new notes to the back/front relatively
+    if (direction === 'prev') {
+      this.setState(prevState => ({
+        notes: [...newNotes, ...prevState.notes],
+      }));
+    } else {
+      this.setState(prevState => ({
+        notes: [...prevState.notes, ...newNotes],
+      }));
+    }
+
+    // Store the page we are currently visiting so we don't fetch upon
+    // revisiting
+    if (visited.indexOf(visitedPage) === -1) {
+      this.setState(prevState => ({
+        visited: [...prevState.visited, visitedPage].sort((a, b) => a - b),
+      }));
+    }
   }
 
   newNote(note) {
-    this.setState((prevState) => ({
-      notes: [...prevState.notes, note],
-      total: prevState.total + 1,
-    }));
+    const {
+      lastPage,
+      visited,
+      total,
+    } = this.state;
+    // If we are at or have visited the last page of pagination we append
+    // the new note to the notes array, otherwise we'll wait to reach the
+    // last page to have access to it
+    if (visited.indexOf(lastPage) !== -1) {
+      this.setState((prevState) => ({
+        notes: [...prevState.notes, note],
+      }));
+    }
+    this.setState({ total: total + 1 });
   }
 
   deleteNote(removedNote) {
@@ -117,8 +108,11 @@ class App extends PureComponent {
 
     // Find and replace the note with the updated version
     const indexOfOldNote = notes.findIndex((note) => note.id === newNote.id);
-    updatedNotes.splice(indexOfOldNote, 1, newNote);
+    // If we can't find it, we don't need to replace anything. Just
+    // wait until we fetch the page containing the note
+    if (indexOfOldNote === -1) return;
 
+    updatedNotes.splice(indexOfOldNote, 1, newNote);
     this.setState({
       notes: updatedNotes,
     });
@@ -134,7 +128,7 @@ class App extends PureComponent {
     const {
       notes,
       total,
-      currentPage,
+      visited,
     } = this.state;
 
     return (
@@ -148,14 +142,17 @@ class App extends PureComponent {
                 notes={notes}
               />
             </Route>
-            <Route path="/">
+            <Route path="/page/:pageNum">
               <Home
                 notes={notes}
                 newNote={this.newNote}
                 total={total}
-                page={currentPage}
-                getNotes={this.getMoreNotes}
+                setNotes={this.setNotes}
+                visited={visited}
               />
+            </Route>
+            <Route path="/">
+              <Redirect to="/page/1" />
             </Route>
           </Switch>
         </Router>
